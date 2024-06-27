@@ -14,7 +14,7 @@
       </ion-toolbar>
       
       <ion-list class="movie-list">
-        <ion-item v-for="movie in paginatedMovies" :key="movie.id" class="movie-item" @click="showMovieDetail(movie.id)">
+        <ion-item v-for="movie in paginatedMovies" :key="movie.id" class="movie-item" :href="`/detail/${movie.id}`"> 
           <ion-thumbnail slot="start" class="movie-thumbnail">
             <ion-img :src="getMoviePosterUrl(movie.poster_path)" alt="Movie Poster"></ion-img>
           </ion-thumbnail>

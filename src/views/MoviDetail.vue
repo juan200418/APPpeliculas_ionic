@@ -2,7 +2,7 @@
   <ion-page>
     <ion-toolbar>
       <ion-buttons slot="start">
-        <ion-button @click="goToListado()" class="btn btn-success">Ir al listado</ion-button>
+        <ion-button href="" @click.prevent="goToListado" class="btn btn-success" :href="`/listado/${genre.Id}`">Ir al listado</ion-button>
       </ion-buttons>
       <ion-title>DETALLE</ion-title>
     </ion-toolbar>
@@ -63,9 +63,9 @@ export default {
   name: 'MovieDetail',
   data() {
     return {
-      movie: null,        // Inicialmente no hay película cargada
-      infoType: 'overview',  // Tipo de información a mostrar por defecto
-      trailerKey: null    // Clave del trailer de YouTube
+      movie: null,
+      infoType: 'overview',
+      trailerKey: null
     };
   },
   methods: {
@@ -76,7 +76,7 @@ export default {
         const response = await axios.get(url);
         this.movie = response.data;
       } catch (error) {
-        console.error('Error al traer los detalles de la película:', error);
+        console.error('Error fetching movie details:', error);
       }
     },
     getMoviePosterUrl(posterPath) {
@@ -92,30 +92,34 @@ export default {
       const movieId = this.$route.params.movieId;
       const apiKey = '492d218f089fd8c20e9c3a945b482a9f';
       const url = `https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${apiKey}&language=es-CO`;
-      
+
       try {
         const response = await axios.get(url);
         const trailers = response.data.results.filter(video => video.type === 'Trailer' && video.site === 'YouTube');
-        
+
         if (trailers.length > 0) {
           this.trailerKey = trailers[0].key;
         } else {
-          console.log('No se encontró trailer para esta película.');
+          console.log('No trailer found for this movie.');
         }
       } catch (error) {
-        console.error('Error al obtener el trailer:', error);
+        console.error('Error fetching trailer:', error);
       }
     },
     goToListado() {
-      // Redirigir al listado de películas
-      this.$router.push({ name: 'listado', params: { genreId: this.movie.genre_id } });
+      if (this.movie && this.movie.genres.length > 0) {
+        const genreId = this.movie.genres[0].id;
+        this.$router.push({ name: 'listado', params: { genreId } });
+      } else {
+        console.error('Cannot redirect to list because movie is not loaded or does not have genres.');
+      }
     },
     getYouTubeEmbedUrl(key) {
       return `https://www.youtube.com/embed/${key}`;
     }
   },
   created() {
-    const movieId = this.$route.params.movieId;  // Obtener el id de la película desde los parámetros de ruta
+    const movieId = this.$route.params.movieId;
     this.fetchMovieDetails(movieId);
   }
 };
@@ -130,7 +134,7 @@ export default {
   margin-left: auto;
   margin-right: auto;
   width: 100%;
-  max-width: 200px; /* Ajuste para mostrar la imagen más grande */
+  max-width: 200px;
   height: auto;
 }
 .segment-buttons {

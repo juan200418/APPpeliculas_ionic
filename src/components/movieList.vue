@@ -10,7 +10,7 @@
         <ion-grid>
           <ion-row>
             <ion-col v-for="genre in genres" :key="genre.id" size="6" size-md="4">
-              <ion-card @click="goToListadoPeliculas(genre.id)">
+              <ion-card @click="goToListadoPeliculas(genre.id)" :href="`/listado/${genre.Id}`">
                 <ion-card-header>
                   <ion-card-title>{{ genre.name }}</ion-card-title>
                 </ion-card-header>
